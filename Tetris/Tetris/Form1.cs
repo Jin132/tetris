@@ -15,22 +15,22 @@ namespace Tetris
     {
         public const int width = 15, height = 25, k = 15;
         public int[,] shape = new int[2, 4];
-        public int[,] field = new int[width, height]; 
-        public Bitmap bitfield=new Bitmap(k* (width + 1) + 1, k* (height + 3) + 1);
+        public int[,] field = new int[width, height];
+        public Bitmap bitfield = new Bitmap(k * (width + 1) + 1, k * (height + 3) + 1);
         public Graphics gr;
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            
+
         }
 
-        
-        
+
+
 
         public Form1()
         {
             InitializeComponent();
-            for (int i=0; i < width; i++)
+            for (int i = 0; i < width; i++)
                 field[i, height - 1] = 1;
             for (int i = 0; i < height; i++)
             {
@@ -56,4 +56,17 @@ namespace Tetris
 
             }
         }
+        public void FillField()
+        {
+            gr.Clear(Color.Black); 
+            for (int i = 0; i < width; i++)
+                for (int j = 0; j < height; j++)
+                    if (field[i, j] == 1)
+                    { 
+                        gr.FillRectangle(Brushes.Green, i * k, j * k, k, k);
+                        gr.DrawRectangle(Pens.Black, i * k, j * k, k, k);
+                    }
+            
+        }
+    }
 }
