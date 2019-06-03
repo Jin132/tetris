@@ -29,7 +29,9 @@ namespace Tetris
 
         public Form1()
         {
+            gr = Graphics.FromImage(bitfield);
             InitializeComponent();
+            
             for (int i = 0; i < width; i++)
                 field[i, height - 1] = 1;
             for (int i = 0; i < height; i++)
@@ -37,36 +39,83 @@ namespace Tetris
                 field[0, i] = 1;
                 field[width - 1, i] = 1;
             }
+            SetShape();
+            FillField();
 
+        }
+        public bool FindMistake()
+        {
+            for (int i = 0; i < 4; i++)
+                if (shape[0, i] >= width || shape[1, i] >= height ||
+                    shape[1, i] <= 0 || shape[0, i] <= 0 ||
+                    field[shape[0, i], shape[1, i]] == 1)
+                    return true;
+            return false;
+        }
 
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.A:
+                    for (int i = 0; i < 4; i++)
+                        shape[0, i]--;
+                    if (FindMistake())
+                        for (int i = 0; i < 4; i++)
+                            shape[0, i]++;
+                    
+                    break;
+                case Keys.D:
+                    for (int i = 0; i < 4; i++)
+                        shape[0, i]++;
+                    if (FindMistake())
+                        for (int i = 0; i < 4; i++)
+                            shape[0, i]--;
+                    break;
+                case Keys.S:
+                    for (int i = 0; i < 4; i++)
+                        shape[1, i]++;
+                    if (FindMistake())
+                        for (int i = 0; i < 4; i++)
+                            shape[1, i]--;
+                    break;
+
+            }
+            FillField();
         }
         public void SetShape()
         {
             Random x = new Random(DateTime.Now.Millisecond);
             switch (x.Next(7))
             {
-                case 0: shape = new int[,] { { 2, 3, 4, 5 }, { 8, 8, 8, 8 } }; break;
-                case 1: shape = new int[,] { { 2, 3, 2, 3 }, { 8, 8, 9, 9 } }; break;
-                case 2: shape = new int[,] { { 2, 3, 4, 4 }, { 8, 8, 8, 9 } }; break;
-                case 3: shape = new int[,] { { 2, 3, 4, 4 }, { 8, 8, 8, 7 } }; break;
-                case 4: shape = new int[,] { { 3, 3, 4, 4 }, { 7, 8, 8, 9 } }; break;
-                case 5: shape = new int[,] { { 3, 3, 4, 4 }, { 9, 8, 8, 7 } }; break;
-                case 6: shape = new int[,] { { 3, 4, 4, 4 }, { 8, 7, 8, 9 } }; break;
+                case 0: shape = new int[,] { { 8, 8, 8, 8 }, { 2, 3, 4, 5 } }; break;
+                case 1: shape = new int[,] { { 8, 8, 9, 9 }, { 2, 3, 2, 3 } }; break;
+                case 2: shape = new int[,] { { 8, 8, 8, 9 }, { 2, 3, 4, 4 } }; break;
+                case 3: shape = new int[,] { { 8, 8, 8, 7 }, { 2, 3, 4, 4 } }; break;
+                case 4: shape = new int[,] { { 7, 8, 8, 9 }, { 3, 3, 4, 4 } }; break;
+                case 5: shape = new int[,] { { 9, 8, 8, 7 }, { 3, 3, 4, 4 } }; break;
+                case 6: shape = new int[,] { { 8, 7, 8, 9 }, { 3, 4, 4, 4 } }; break;
 
 
             }
         }
+
         public void FillField()
         {
-            gr.Clear(Color.Black); 
+            gr.Clear(Color.Black);
             for (int i = 0; i < width; i++)
                 for (int j = 0; j < height; j++)
                     if (field[i, j] == 1)
-                    { 
+                    {
                         gr.FillRectangle(Brushes.Green, i * k, j * k, k, k);
                         gr.DrawRectangle(Pens.Black, i * k, j * k, k, k);
                     }
-            
+            for (int i = 0; i < 4; i++)
+            {
+                gr.FillRectangle(Brushes.Red, shape[0, i] * k, shape[1, i] * k, k, k);
+                gr.DrawRectangle(Pens.Black, shape[0, i] * k, shape[1, i] * k, k, k);
+            }
+            pictureBox1.Image = bitfield;
         }
     }
 }
