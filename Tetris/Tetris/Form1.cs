@@ -63,7 +63,6 @@ namespace Tetris
                     if (FindMistake())
                         for (int i = 0; i < 4; i++)
                             shape[0, i]++;
-                    
                     break;
                 case Keys.D:
                     for (int i = 0; i < 4; i++)
@@ -78,11 +77,61 @@ namespace Tetris
                     if (FindMistake())
                         for (int i = 0; i < 4; i++)
                             shape[1, i]--;
+                    FillField();
                     break;
+                case Keys.Space:
+                    var shapeT = new int[2, 4];
+                    Array.Copy(shape, shapeT, shape.Length);
+                    int maxx = 0, maxy = 0;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (shape[0, i] > maxx)
+                            maxx = shape[0, i];
+                        if (shape[1, i] > maxy)
+                            maxy = shape[1, i];
+                    }
+                    for (int i = 0; i < 4; i++)
+                    {
+                        int temp = shape[1, i];
+                        shape[1, i] = maxy - (maxx - shape[0, i]) - 1;
+                        shape[0, i] = maxx - (3 - (maxy - temp)) + 1;
+                    }
+                    if (FindMistake())
+                        Array.Copy(shapeT, shape, shape.Length);
+                    break;
+            }
+        }
 
+        private void TickTimer_Tick(object sender, System.EventArgs e)
+        {
+            int cross = 0;
+            if (field[8, 3] == 1)
+                Environment.Exit(0);
+            for (int i = 0; i < 4; i++)
+                shape[1, i]++;
+
+            for (int i = height - 2; i > 2; i--)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    if (field[j, i] == 1)
+                        cross++;
+                }
+                if (cross == width)
+                    for (int k = i; k > 1; k--)
+                        for (int l = 1; l < width - 1; l++)
+                            field[l, k] = field[l, k - 1];
+            }
+
+            if (FindMistake())
+            {
+                for (int i = 0; i < 4; i++)
+                    field[shape[0, i],--shape[1, i]]++;
+                SetShape();
             }
             FillField();
         }
+
         public void SetShape()
         {
             Random x = new Random(DateTime.Now.Millisecond);
